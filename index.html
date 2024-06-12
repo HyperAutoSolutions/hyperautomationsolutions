@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HyperAuto Solutions - Coming Soon</title>
     <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
         body {
             margin: 0;
             padding: 0;
@@ -12,66 +30,109 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f8f9fa;
+            background-color: #000;
             font-family: Arial, sans-serif;
-            color: #333;
+            color: #fff;
+            overflow: hidden;
         }
         .container {
             text-align: center;
+            position: relative;
+            z-index: 10;
+            animation: fadeIn 2s ease-in-out;
         }
         .logo {
             max-width: 200px;
             margin-bottom: 20px;
+            animation: slideIn 1.5s ease-in-out;
         }
         .headline {
             font-size: 2.5em;
             margin-bottom: 20px;
+            animation: slideIn 2s ease-in-out;
         }
         .tagline {
             font-size: 1.5em;
             margin-bottom: 40px;
-            color: #555;
+            color: #bbb;
+            animation: slideIn 2.5s ease-in-out;
         }
-        .subscribe {
-            font-size: 1em;
-            color: #777;
+        .coming-soon {
+            font-size: 1.2em;
+            animation: slideIn 3s ease-in-out;
         }
-        .input-container {
-            margin-bottom: 20px;
-        }
-        .input-container input {
-            padding: 10px;
-            font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 300px;
-            max-width: 80%;
-        }
-        .input-container button {
-            padding: 10px 20px;
-            font-size: 1em;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: #fff;
-            cursor: pointer;
-        }
-        .input-container button:hover {
-            background-color: #0056b3;
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="content">
         <img src="logo.png" alt="HyperAuto Solutions" class="logo"> <!-- Replace 'logo.png' with the path to your logo -->
         <div class="headline">HyperAuto Solutions</div>
-        <div class="tagline">Where Automation Meets Hyperdrive</div>
+        <div class="tagline">Accelerating Automation Excellence</div>
         <p class="coming-soon">Our website is coming soon. Stay tuned for more updates!</p>
-        <div class="input-container">
-            <input type="email" placeholder="Enter your email to get notified" required>
-            <button type="submit">Notify Me</button>
-        </div>
-        <p class="subscribe">Subscribe to stay updated!</p>
     </div>
+    <canvas id="matrix"></canvas>
+    <script>
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const letters = '01';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        
+        const drops = [];
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Calculate the content container dimensions
+            const content = document.getElementById('content');
+            const rect = content.getBoundingClientRect();
+
+            ctx.fillStyle = '#0F0';
+            ctx.font = `${fontSize}px Arial`;
+
+            for (let i = 0; i < drops.length; i++) {
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+                
+                // Skip drawing characters inside the content area
+                if (x > rect.left && x < rect.right && y > rect.top && y < rect.bottom) {
+                    continue;
+                }
+
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, x, y);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                drops[i]++;
+            }
+        }
+
+        setInterval(draw, 33);
+
+        // Resize canvas when the window is resized
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 </html>
